@@ -2,15 +2,11 @@
 
 import {
   ArrowRight,
-  Camera,
   ExternalLink,
   FileText,
   Lightbulb,
   LockKeyhole,
-  MapPin,
   MessageCircle,
-  Music2,
-  Play,
   Users,
   X,
 } from "lucide-react";
@@ -35,25 +31,7 @@ type SpaceItem = {
   action?:string;
 };
 
-function SubstackMark() {
-  return <svg viewBox="0 0 24 24" aria-hidden="true">
-    <path d="M4 5.5h16M4 9h16" />
-    <path d="M5.5 12.5h13v7.8L12 16.8l-6.5 3.5z" />
-  </svg>;
-}
-
-function PinterestMark() {
-  return <span className={styles.pinterestGlyph} aria-hidden="true">P</span>;
-}
-
-const socialItems: SpaceItem[] = [
-  { kind:"social", label:"Instagram", href:"https://www.instagram.com/juniokaito/", Icon:Camera, tone:"instagram", x:.12, y:.34 },
-  { kind:"social", label:"Canal WhatsApp", href:"https://whatsapp.com/channel/0029Vb71RPC8vd1UfyhnBz0o", Icon:MessageCircle, tone:"whatsapp", x:.44, y:.43 },
-  { kind:"social", label:"TikTok", href:"https://www.tiktok.com/@juniokaito", Icon:Music2, tone:"tiktok", x:.76, y:.34 },
-  { kind:"social", label:"YouTube", href:"https://www.youtube.com/@juniokaito", Icon:Play, tone:"youtube", x:.18, y:.65 },
-  { kind:"social", label:"Substack", href:"https://substack.com/@juniokaito?utm_source=share&utm_medium=android&r=5y38kb", Icon:SubstackMark, tone:"substack", x:.47, y:.69 },
-  { kind:"social", label:"Pinterest", href:"https://www.pinterest.com/juniokaito/", Icon:PinterestMark, tone:"pinterest", x:.73, y:.62 },
-];
+const socialItems: SpaceItem[] = [];
 
 const createdItems: SpaceItem[] = [
   { kind:"product", label:"Sessão de direcionamento", eyebrow:"vendas online", action:"saiba mais", href:"https://app.kaitocompany.com/", Icon:Lightbulb, tone:"direction", x:.5, y:.53 },
@@ -318,7 +296,7 @@ export default function LinksSpace() {
     </section>}
 
     <div className={styles.arena} ref={arena} aria-label={mode === "social" ? "Redes sociais de Junior Kaito" : "Loja de Junior Kaito"}>
-      <span className={`${styles.doodle} ${styles.d1}`} aria-hidden="true">✦</span>
+      {mode === "shop" && <span className={`${styles.doodle} ${styles.d1}`} aria-hidden="true">✦</span>}
       {items.map((item,i) => {
         const {label,href,Icon,tone}=item;
         const external=href.startsWith("http");
@@ -352,19 +330,27 @@ export default function LinksSpace() {
       })}
     </div>
 
-    <nav className={styles.modeSwitch} aria-label="Alternar entre redes sociais e loja">
-      {hintVisible && <div key={hintToken} className={`${styles.shopHint} ${hintKind === "social" ? styles.socialHint : ""}`} role="status">
-        {hintKind === "social" ? <MessageCircle aria-hidden="true" /> : <Lightbulb aria-hidden="true" />}
-        <span>{hintKind === "social"
-          ? "Escolha onde quer me acompanhar. Todas as minhas redes estão reunidas aqui."
-          : hintKind === "created"
-            ? "Conheça meu serviço de vendas online. Toque no card para ver os detalhes e preços."
-            : "Aqui entram produtos e serviços que eu realmente recomendo. Novas indicações aparecem quando houver algo que vale a pena."}</span>
+    {mode === "social" && hintVisible && <a
+      key={hintToken}
+      className={styles.followBalloon}
+      href="whatsapp://channel/0029Vb71RPC8vd1UfyhnBz0o"
+      aria-label="Seguir @juniokaito no canal do WhatsApp">
+      <span>Em todas as redes</span>
+      <strong>@juniokaito</strong>
+      <span className={styles.followAction}>Seguir no WhatsApp</span>
+    </a>}
+
+    <nav className={styles.modeSwitch} aria-label="Alternar entre Início e Loja">
+      {mode === "shop" && hintVisible && <div key={hintToken} className={styles.shopHint} role="status">
+        <Lightbulb aria-hidden="true" />
+        <span>{hintKind === "created"
+          ? "Conheça meu serviço de vendas online. Toque no card para ver os detalhes e preços."
+          : "Aqui entram produtos e serviços que eu realmente recomendo. Novas indicações aparecem quando houver algo que vale a pena."}</span>
       </div>}
-      <button type="button" className={mode === "social" ? styles.selected : ""} aria-pressed={mode === "social"} onClick={openSocial}>Social</button>
+      <button type="button" className={mode === "social" ? styles.selected : ""} aria-pressed={mode === "social"} onClick={openSocial}>Início</button>
       <button type="button" className={mode === "shop" ? styles.selected : ""} aria-pressed={mode === "shop"} onClick={openShop}>Loja</button>
     </nav>
-    <p className={styles.locationIdentity}><MapPin aria-hidden="true" /> São Paulo, SP</p>
+    <p className={styles.locationIdentity}>São Paulo, SP</p>
     {detailsOpen && <ProductDetailsModal tab={detailTab} setTab={setDetailTab} onClose={()=>setDetailsOpen(false)} />}
   </main>;
 }
