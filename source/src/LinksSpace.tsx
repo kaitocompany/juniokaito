@@ -169,6 +169,7 @@ export default function LinksSpace() {
   const [detailsOpen, setDetailsOpen] = useState(false);
   const [detailTab, setDetailTab] = useState<DetailTab>("about");
   const [hintVisible, setHintVisible] = useState(true);
+  const [shopPromptVisible, setShopPromptVisible] = useState(false);
   const [hintToken, setHintToken] = useState(0);
   const [hintKind, setHintKind] = useState<HintKind>("social");
   const hintTimer = useRef<number | null>(null);
@@ -226,7 +227,10 @@ export default function LinksSpace() {
   }, [items, limits, mode]);
 
   useEffect(() => {
-    hintTimer.current = window.setTimeout(() => setHintVisible(false), 30000);
+    hintTimer.current = window.setTimeout(() => {
+      setHintVisible(false);
+      setShopPromptVisible(true);
+    }, 30000);
     return () => {
       if (hintTimer.current !== null) window.clearTimeout(hintTimer.current);
     };
@@ -270,9 +274,13 @@ export default function LinksSpace() {
   const showHint = (kind:HintKind) => {
     setHintKind(kind);
     setHintVisible(true);
+    setShopPromptVisible(false);
     setHintToken(current => current + 1);
     if (hintTimer.current !== null) window.clearTimeout(hintTimer.current);
-    hintTimer.current = window.setTimeout(() => setHintVisible(false), 30000);
+    hintTimer.current = window.setTimeout(() => {
+      setHintVisible(false);
+      if (kind === "social") setShopPromptVisible(true);
+    }, 30000);
   };
 
   const openShop = () => {
@@ -341,6 +349,9 @@ export default function LinksSpace() {
     </a>}
 
     <nav className={styles.modeSwitch} aria-label="Alternar entre Início e Loja">
+      {mode === "social" && shopPromptVisible && <button type="button" className={styles.shopPrompt} onClick={openShop}>
+        Clique aqui para ver meus produtos
+      </button>}
       {mode === "shop" && hintVisible && <div key={hintToken} className={styles.shopHint} role="status">
         <Lightbulb aria-hidden="true" />
         <span>{hintKind === "created"
